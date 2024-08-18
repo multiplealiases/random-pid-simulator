@@ -1,34 +1,42 @@
 use rand::prelude::*;
 use bitvec::prelude::*;
 use bitvec::bitvec;
-// PIDs 0 and 1 can't be reassigned.
-const PID_SPACE: usize = (1 << 20) - 2;
-const SIMULATIONS: usize = 1000;
+use clap::Parser;
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+struct Cli {
+    #[arg(short, long)]
+    pid_space: usize,
+
+    #[arg(short, long)]
+    simulations: usize,
+}
 
 fn main() {
-    let mut tries_existing_process = vec![0.0; PID_SPACE];
+    let cli = Cli::parse();
+    let mut tries_existing_process = vec![0.0; cli.pid_space];
     eprint!("Simulation ");
-    for s in 0..SIMULATIONS {
+    for s in 0..cli.simulations {
         eprint!("{s} ");
-        let mut pids = bitvec![0; PID_SPACE];
-        for i in 0..PID_SPACE {
-            let (_, tries) = tryassign(&mut pids);
+        let mut pids = bitvec![0; cli.pid_space];
+        for i in 0..cli.pid_space {
+            let (_, tries) = tryassign(&mut pids, cli.pid_space);
             tries_existing_process[i] += tries as f64;
         }
     }
-    let tries_existing_process_avg: Vec<f64> = tries_existing_process.into_iter().map(|n| n / SIMULATIONS as f64).collect();
+    let tries_existing_process_avg: Vec<f64> = tries_existing_process.into_iter().map(|n| n / cli.simulations as f64).collect();
     eprintln!("");
     println!("{tries_existing_process_avg:?}");
 }
 
-fn tryassign(pids: &mut BitVec) -> (usize, usize) {
+fn tryassign(pids: &mut BitVec, pid_space: usize) -> (usize, usize) {
     let mut rng = thread_rng();
     let mut success = false;
     let mut tries = 0;
     let mut candidate = 0;
     while !success {
         tries += 1;
-        candidate = rng.gen_range(0..PID_SPACE);
+        candidate = rng.gen_range(0..pid_space);
         if !pids[candidate] {
             pids.set(candidate, true);
             success = true;

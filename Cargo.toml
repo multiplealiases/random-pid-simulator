@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 bitvec = "1.0.1"
+clap = { version = "4.5.16", features = ["derive"] }
 rand = "0.8.5"
