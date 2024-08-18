@@ -2,7 +2,7 @@ use rand::prelude::*;
 use bitvec::prelude::*;
 use bitvec::bitvec;
 // PIDs 0 and 1 can't be reassigned.
-const PID_SPACE: usize = (1 << 24) - 2;
+const PID_SPACE: usize = (1 << 20) - 2;
 const SIMULATIONS: usize = 1000;
 
 fn main() {
