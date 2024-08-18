@@ -10,14 +10,24 @@ struct Cli {
 
     #[arg(short, long)]
     simulations: usize,
+
+    #[arg(short, long)]
+    quiet: bool,
+
+    #[arg(short, long)]
+    no_output: bool,
 }
 
 fn main() {
     let cli = Cli::parse();
     let mut tries_existing_process = vec![0.0; cli.pid_space];
-    eprint!("Simulation ");
+    if !cli.quiet {
+        eprint!("Simulation ");
+    }
     for s in 0..cli.simulations {
-        eprint!("{s} ");
+        if !cli.quiet {
+            eprint!("{s} ");
+        }
         let mut pids = bitvec![0; cli.pid_space];
         for i in 0..cli.pid_space {
             let (_, tries) = tryassign(&mut pids, cli.pid_space);
@@ -26,7 +36,9 @@ fn main() {
     }
     let tries_existing_process_avg: Vec<f64> = tries_existing_process.into_iter().map(|n| n / cli.simulations as f64).collect();
     eprintln!("");
-    println!("{tries_existing_process_avg:?}");
+    if !cli.no_output {
+        println!("{tries_existing_process_avg:?}");
+    }
 }
 
 fn tryassign(pids: &mut BitVec, pid_space: usize) -> (usize, usize) {
