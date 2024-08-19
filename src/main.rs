@@ -1,7 +1,7 @@
-use rand::prelude::*;
-use bitvec::prelude::*;
 use bitvec::bitvec;
+use bitvec::prelude::*;
 use clap::Parser;
+use rand::prelude::*;
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 struct Cli {
@@ -34,7 +34,10 @@ fn main() {
             tries_existing_process[i] += tries as f64;
         }
     }
-    let tries_existing_process_avg: Vec<f64> = tries_existing_process.into_iter().map(|n| n / cli.simulations as f64).collect();
+    let tries_existing_process_avg: Vec<f64> = tries_existing_process
+        .into_iter()
+        .map(|n| n / cli.simulations as f64)
+        .collect();
     eprintln!("");
     if !cli.no_output {
         println!("{tries_existing_process_avg:?}");
